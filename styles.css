@@ -1,4 +1,6 @@
-/* --- estilos originais mantidos --- */
+@import url('https://assets-persist.lovart.ai/agent-static-assets/NotoSansHans-Bold.otf');
+@import url('https://assets-persist.lovart.ai/agent-static-assets/NotoSansHans-Regular.otf');
+
 :root {
   --color-correct: #6aaa64;
   --color-present: #c9b458;
@@ -13,6 +15,7 @@
   --tile-font-size: 2rem;
   --key-height: 50px;
 }
+
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -28,6 +31,7 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
 }
+
 .game-container {
   display: flex;
   flex-direction: column;
@@ -40,6 +44,7 @@ body {
   padding: 10px;
   box-sizing: border-box;
 }
+
 header {
   display: flex;
   justify-content: center;
@@ -49,7 +54,9 @@ header {
   height: 50px;
   margin-bottom: 10px;
   flex-shrink: 0;
+  position: relative;
 }
+
 h1 {
   font-size: 32px;
   font-weight: 700;
@@ -58,6 +65,38 @@ h1 {
   text-transform: uppercase;
   font-family: 'Noto Sans Hans', sans-serif;
 }
+
+/* Botão de reiniciar no cabeçalho */
+#reset-btn {
+  position: absolute;
+  right: 0;
+  background-color: #e63946;
+  border: none;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 2px 6px rgba(230, 57, 70, 0.5);
+}
+
+#reset-btn:hover {
+  background-color: #c1121f;
+}
+
+#reset-btn:active {
+  background-color: #a00010;
+  transform: scale(0.96);
+}
+
 #board-container {
   display: flex;
   justify-content: center;
@@ -67,17 +106,20 @@ h1 {
   margin: 10px 0;
   overflow: hidden;
 }
+
 #board {
   display: grid;
   grid-template-rows: repeat(6, 1fr);
   grid-gap: var(--grid-gap);
   width: fit-content;
 }
+
 .row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-gap: var(--grid-gap);
 }
+
 .tile {
   width: var(--tile-size);
   height: var(--tile-size);
@@ -92,13 +134,46 @@ h1 {
   user-select: none;
   transition: transform 0.25s linear;
 }
-.tile[data-state="active"] { border-color: #565758; animation: pop 0.1s; }
-.tile[data-state="correct"] { background-color: var(--color-correct); border-color: var(--color-correct); }
-.tile[data-state="present"] { background-color: var(--color-present); border-color: var(--color-present); }
-.tile[data-state="absent"] { background-color: var(--color-absent); border-color: var(--color-absent); }
-.flip { animation: flip 0.5s ease forwards; }
-#keyboard-container { width: 100%; flex-shrink: 0; margin-bottom: 10px; padding: 0 5px; }
-.keyboard-row { display: flex; justify-content: center; width: 100%; margin: 0 auto 8px; touch-action: manipulation; }
+
+.tile[data-state="active"] {
+  border-color: #565758;
+  animation: pop 0.1s;
+}
+
+.tile[data-state="correct"] {
+  background-color: var(--color-correct);
+  border-color: var(--color-correct);
+}
+
+.tile[data-state="present"] {
+  background-color: var(--color-present);
+  border-color: var(--color-present);
+}
+
+.tile[data-state="absent"] {
+  background-color: var(--color-absent);
+  border-color: var(--color-absent);
+}
+
+.flip {
+  animation: flip 0.5s ease forwards;
+}
+
+#keyboard-container {
+  width: 100%;
+  flex-shrink: 0;
+  margin-bottom: 10px;
+  padding: 0 5px;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto 8px;
+  touch-action: manipulation;
+}
+
 .key {
   font-family: inherit;
   font-weight: bold;
@@ -119,25 +194,112 @@ h1 {
   font-size: 13px;
   transition: background-color 0.1s ease;
 }
-.key-wide { flex: 1.5; font-size: 12px; }
-@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-@keyframes flip { 0% { transform: rotateX(0); border-color: #565758; } 45% { transform: rotateX(90deg); border-color: #565758; } 55% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
-@keyframes shake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
-.shake { animation: shake 0.6s; }
+
+.key-wide {
+  flex: 1.5;
+  font-size: 12px;
+}
+
+.key[data-key="ENTER"] {
+  background-color: #6aaa64;
+  color: #ffffff;
+}
+
+@keyframes pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes flip {
+  0%   { transform: rotateX(0); border-color: #565758; }
+  45%  { transform: rotateX(90deg); border-color: #565758; }
+  55%  { transform: rotateX(90deg); }
+  100% { transform: rotateX(0); }
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+.shake {
+  animation: shake 0.6s;
+}
+
 #debug-panel {
-  position: fixed; bottom: 10px; left: 10px;
-  background: rgba(0, 0, 0, 0.7); color: #0f0;
-  padding: 8px; font-family: monospace; font-size: 10px;
-  border-radius: 4px; pointer-events: none; z-index: 1000;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #0f0;
+  padding: 8px;
+  font-family: monospace;
+  font-size: 10px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1000;
 }
+
 .message-container {
-  position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center;
-  z-index: 2000; pointer-events: none;
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2000;
+  pointer-events: none;
 }
+
 .message {
-  background-color: var(--text-color); color: var(--bg-color);
-  padding: 10px 20px; border-radius: 4px; margin-bottom: 10px;
-  font-weight: bold; font-size: 14px; opacity: 1;
-  transition: opacity 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  padding: 10px 20px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 14px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 600px) {
+  :root {
+    --tile-size: 50px;
+    --tile-font-size: 1.8rem;
+    --grid-gap: 4px;
+    --key-height: 48px;
+  }
+  .game-container {
+    height: 100dvh;
+    padding: 5px;
+  }
+  h1 { font-size: 24px; }
+  .key {
+    margin: 0 2px;
+    height: 45px;
+    font-size: 12px;
+  }
+}
+
+@media (max-height: 700px) {
+  :root {
+    --tile-size: 45px;
+    --tile-font-size: 1.6rem;
+    --grid-gap: 3px;
+    --key-height: 42px;
+  }
+  h1 {
+    font-size: 20px;
+    margin-bottom: 5px;
+  }
+  header {
+    height: 40px;
+    margin-bottom: 5px;
+  }
 }
