@@ -1,7 +1,21 @@
+// Configuração do Jogo
 const WORD_LENGTH = 5;
 const FLIP_ANIMATION_DURATION = 500;
-const targetWord = "TIGER";
+const DANCE_ANIMATION_DURATION = 500;
 
+// Banco de palavras em português (apenas 5 letras)
+const wordBank = [
+  "CASAS", "LIVRO", "MELAO", "TERRA", "FOLHA", "GRAMA",
+  "PEDRA", "AREIA", "NUVEM", "PLANO", "RUMOS", "VINHO"
+];
+
+// Filtra apenas palavras com 5 letras
+const validWords = wordBank.filter(w => w.length === WORD_LENGTH);
+
+// Sorteia uma palavra aleatória
+const targetWord = validWords[Math.floor(Math.random() * validWords.length)];
+
+// Estado do Jogo
 let guesses = [];
 let currentGuess = "";
 let gameOver = false;
@@ -11,35 +25,27 @@ const keyboardContainer = document.getElementById("keyboard-container");
 const debugPanel = document.getElementById("debug-panel");
 const messageContainer = document.getElementById("message-container");
 
+// Layout do Teclado
 const keyboardLayout = [
-  ["Q","W","E","R","T","Y","U","I","O","P"],
-  ["A","S","D","F","G","H","J","K","L"],
-  ["ENTER","Z","X","C","V","B","N","M","⌫"]
+  ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+  ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+  ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "⌫"]
 ];
 
+// Inicialização
 function initGame() {
-  // Limpa o estado
-  guesses = [];
-  currentGuess = "";
-  gameOver = false;
-
-  // Limpa o tabuleiro e teclado
-  board.innerHTML = "";
-  document.getElementById("row-1").innerHTML = "";
-  document.getElementById("row-2").innerHTML = "";
-  document.getElementById("row-3").innerHTML = "";
-  messageContainer.innerHTML = "";
-
   createGrid();
   createKeyboard();
   updateDebug();
+  window.addEventListener("keydown", handleKeydown);
 }
 
+// Criar Grid 6x5
 function createGrid() {
   for (let i = 0; i < 6; i++) {
     const row = document.createElement("div");
     row.className = "row";
-    for (let j = 0; j < 5; j++) {
+    for (let j = 0; j < WORD_LENGTH; j++) {
       const tile = document.createElement("div");
       tile.className = "tile";
       tile.id = `tile-${i}-${j}`;
@@ -49,6 +55,7 @@ function createGrid() {
   }
 }
 
+// Criar Teclado
 function createKeyboard() {
   keyboardLayout.forEach((rowKeys, rowIndex) => {
     const rowDiv = document.getElementById(`row-${rowIndex + 1}`);
@@ -63,6 +70,7 @@ function createKeyboard() {
   });
 }
 
+// Manipular entrada
 function handleKeydown(e) {
   if (gameOver) return;
   let key = e.key.toUpperCase();
@@ -73,9 +81,13 @@ function handleKeydown(e) {
 
 function handleInput(key) {
   if (gameOver) return;
-  if (key === "⌫") deleteLetter();
-  else if (key === "ENTER") submitGuess();
-  else addLetter(key);
+  if (key === "⌫") {
+    deleteLetter();
+  } else if (key === "ENTER") {
+    submitGuess();
+  } else {
+    addLetter(key);
+  }
 }
 
 function addLetter(letter) {
@@ -97,8 +109,8 @@ function updateBoard() {
   for (let i = 0; i < WORD_LENGTH; i++) {
     const tile = document.getElementById(`tile-${row}-${i}`);
     tile.textContent = currentGuess[i] || "";
-    if (currentGuess[i]) tile.setAttribute("data-state", "active");
-    else tile.removeAttribute("data-state");
+    tile.setAttribute("data-state", currentGuess[i] ? "active" : "");
+    if (!currentGuess[i]) tile.removeAttribute("data-state");
   }
   updateDebug();
 }
@@ -111,7 +123,7 @@ function showMessage(msg) {
   setTimeout(() => {
     messageEl.style.opacity = "0";
     setTimeout(() => {
-      if (messageEl.parentNode) messageContainer.removeChild(messageEl);
+      messageContainer.removeChild(messageEl);
     }, 300);
   }, 2000);
 }
@@ -125,7 +137,7 @@ function shakeTiles(row) {
 function submitGuess() {
   if (currentGuess.length !== WORD_LENGTH) {
     shakeTiles(guesses.length);
-    showMessage("Not enough letters");
+    showMessage("Não há letras suficientes");
     return;
   }
 
@@ -135,8 +147,9 @@ function submitGuess() {
 
   const targetLetters = targetWord.split("");
   const guessLetters = guess.split("");
-  const states = Array(5).fill("absent");
+  const states = Array(WORD_LENGTH).fill("absent");
 
+  // Verificar verdes
   for (let i = 0; i < WORD_LENGTH; i++) {
     if (guessLetters[i] === targetLetters[i]) {
       states[i] = "correct";
@@ -145,6 +158,7 @@ function submitGuess() {
     }
   }
 
+  // Verificar amarelos
   for (let i = 0; i < WORD_LENGTH; i++) {
     if (guessLetters[i] && targetLetters.includes(guessLetters[i])) {
       states[i] = "present";
@@ -153,6 +167,7 @@ function submitGuess() {
     }
   }
 
+  // Aplicar animações
   for (let i = 0; i < WORD_LENGTH; i++) {
     setTimeout(() => {
       const tile = document.getElementById(`tile-${row}-${i}`);
@@ -186,30 +201,17 @@ function updateKeyboardColor(letter, state) {
 function checkWinCondition() {
   const lastGuess = guesses[guesses.length - 1];
   if (lastGuess === targetWord) {
-    showMessage("Splendid!");
+    showMessage("Parabéns!");
     gameOver = true;
-    const row = guesses.length - 1;
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => {
-        const tile = document.getElementById(`tile-${row}-${i}`);
-        tile.classList.add("dance");
-      }, i * 100);
-    }
   } else if (guesses.length === 6) {
-    showMessage(targetWord);
+    showMessage(`A palavra era: ${targetWord}`);
     gameOver = true;
   }
 }
 
 function updateDebug() {
-  debugPanel.innerHTML = `Word: ${targetWord} | Guesses: ${guesses.length}/6 | Current: ${currentGuess}`;
+  debugPanel.innerHTML = `Palavra: ${targetWord} | Tentativas: ${guesses.length}/6 | Atual: ${currentGuess}`;
 }
-
-// Botão de reiniciar
-document.getElementById("reset-btn").addEventListener("click", initGame);
-
-// Teclado físico
-window.addEventListener("keydown", handleKeydown);
 
 // Iniciar
 initGame();
