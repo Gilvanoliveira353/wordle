@@ -212,6 +212,9 @@ function checkWinCondition() {
 function updateDebug() {
   debugPanel.innerHTML = `Palavra: ${targetWord} | Tentativas: ${guesses.length}/6 | Atual: ${currentGuess}`;
 }
-
+// Botão Reiniciar
+document.getElementById("restart-btn").addEventListener("click", () => {
+  location.reload();
+});
 // Iniciar
 initGame();
